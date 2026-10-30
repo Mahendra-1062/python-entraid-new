@@ -10,9 +10,9 @@ def create_group(
     graph: GraphClient,
     display_name: str,
     mail_nickname: str,
-    group_name: str,
     description: str = "",
     group_type: GroupType = "security",
+    group_name: str,
 ) -> dict[str, Any]:
     is_microsoft_365 = group_type == "microsoft-365"
     return graph.request(
