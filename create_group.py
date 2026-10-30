@@ -26,3 +26,4 @@ def create_group(
             "groupTypes": ["Unified"] if is_microsoft_365 else [],
         },
     )
+
