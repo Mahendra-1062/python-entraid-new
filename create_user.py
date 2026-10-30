@@ -2,6 +2,7 @@ import re
 from typing import Any
 
 from graph_client import GraphClient
+from create_group import create_group
 
 
 def create_user(
@@ -20,6 +21,15 @@ def create_user(
     if not nickname:
         raise ValueError("Could not derive a mail nickname; provide one explicitly.")
 
+    description="Manage Microsoft Entra ID objects through Microsoft Graph."
+    group_type = "security"
+    result = create_group(
+    graph,
+    display_name,
+    mail_nickname,
+    description,
+    group_type,
+)
     return graph.request(
         "POST",
         "/users",
