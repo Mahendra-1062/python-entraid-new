@@ -23,6 +23,7 @@ def create_group(
             "mailEnabled": is_microsoft_365,
             "mailNickname": mail_nickname,
             "securityEnabled": not is_microsoft_365,
-            "groupTypes": ["Unified"] if is_microsoft_365 else [],
+            "groupTypes": ["unified"] if is_microsoft_365 else [],
         },
     )
+
