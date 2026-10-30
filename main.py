@@ -120,6 +120,7 @@ def main(argv: Sequence[str] | None = None) -> None:
             args.mail_nickname,
             args.description,
             args.type,
+            args.group_name,
         )
     elif args.command == "add-group-member":
         add_group_member(graph, args.group_id, args.member_id)

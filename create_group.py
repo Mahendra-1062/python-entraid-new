@@ -12,6 +12,7 @@ def create_group(
     mail_nickname: str,
     description: str = "",
     group_type: GroupType = "security",
+    group_name: str,
 ) -> dict[str, Any]:
     is_microsoft_365 = group_type == "microsoft-365"
     return graph.request(
@@ -24,6 +25,7 @@ def create_group(
             "mailNickname": mail_nickname,
             "securityEnabled": not is_microsoft_365,
             "groupTypes": ["unified"] if is_microsoft_365 else [],
+            "groupName": group_name,
         },
     )
 
