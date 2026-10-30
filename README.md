@@ -1,9 +1,10 @@
 # Microsoft Entra ID scripts
 
-These standalone Python 3.10+ scripts use Microsoft Graph v1.0 and app-only
-client-credentials authentication:
+The `main.py` CLI uses Microsoft Graph v1.0 and app-only client-credentials
+authentication. Operation modules expose parameterized functions and do not
+parse arguments or start operations when run directly:
 
-- `create_user.py` — create a user; prompts for a temporary password without echoing it.
+- `create_user.py` — expose the parameterized user-creation operation; `main.py` prompts for the temporary password without echoing it.
 - `create_group.py` — create a security or Microsoft 365 group.
 - `add_group_member.py` — add a user, group, or service principal to a group.
 - `create_app_registration.py` — create an app registration without API permissions or credentials.
@@ -37,13 +38,27 @@ client-credentials authentication:
 ## Examples
 
 ```powershell
-py .\create_user.py --display-name "Example User" --user-principal-name "example.user@contoso.com"
-py .\create_group.py --display-name "Engineering" --mail-nickname "engineering"
-py .\create_group.py --display-name "Project Team" --mail-nickname "project-team" --type microsoft-365
-py .\add_group_member.py --group-id "<group-object-id>" --member-id "<user-object-id>"
-py .\create_app_registration.py --display-name "Internal Service"
-py .\create_enterprise_app.py --app-id "<application-client-id>"
-py .\assign_enterprise_app.py --service-principal-id "<enterprise-app-object-id>" --principal-id "<user-or-group-object-id>"
+py .\main.py create-user --display-name "Example User" --user-principal-name "example.user@contoso.com"
+py .\main.py create-group --display-name "Engineering" --mail-nickname "engineering"
+py .\main.py create-group --display-name "Project Team" --mail-nickname "project-team" --type microsoft-365
+py .\main.py add-group-member --group-id "<group-object-id>" --member-id "<user-object-id>"
+py .\main.py create-app-registration --display-name "Internal Service"
+py .\main.py create-enterprise-app --app-id "<application-client-id>"
+py .\main.py assign-enterprise-app --service-principal-id "<enterprise-app-object-id>" --principal-id "<user-or-group-object-id>"
+```
+
+Python callers can import the same parameterized operations directly, for
+example:
+
+```python
+from graph_client import GraphClient
+from create_group import create_group
+
+group = create_group(
+    GraphClient(),
+    display_name="Engineering",
+    mail_nickname="engineering",
+)
 ```
 
 The assignment script uses the all-zero app-role ID by default to grant the

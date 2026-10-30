@@ -1,4 +1,3 @@
-import argparse
 import os
 from typing import Any
 from uuid import UUID
@@ -11,11 +10,11 @@ GRAPH_BASE_URL = "https://graph.microsoft.com/v1.0"
 GRAPH_SCOPE = ["https://graph.microsoft.com/.default"]
 
 
-def parse_object_id(value: str) -> str:
+def normalize_object_id(value: str) -> str:
     try:
         return str(UUID(value))
     except ValueError as error:
-        raise argparse.ArgumentTypeError("must be a valid GUID") from error
+        raise ValueError(f"{value!r} must be a valid GUID.") from error
 
 
 class GraphAPIError(RuntimeError):

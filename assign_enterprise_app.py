@@ -1,56 +1,27 @@
-import argparse
-import json
+from typing import Any
 
-from graph_client import GraphClient, parse_object_id
+from graph_client import GraphClient, normalize_object_id
 
 
 DEFAULT_ACCESS_ROLE_ID = "00000000-0000-0000-0000-000000000000"
 
 
-def assign_enterprise_app() -> None:
-    parser = argparse.ArgumentParser(
-        description="Assign a user or group to an enterprise app."
-    )
-    parser.add_argument(
-        "--service-principal-id",
-        required=True,
-        type=parse_object_id,
-        help="Object ID of the enterprise app (service principal).",
-    )
-    parser.add_argument(
-        "--principal-id",
-        required=True,
-        type=parse_object_id,
-        help="Object ID of the user or group to assign.",
-    )
-    parser.add_argument(
-        "--app-role-id",
-        default=DEFAULT_ACCESS_ROLE_ID,
-        type=parse_object_id,
-        help=(
-            "App role ID to assign. The all-zero default grants the app's default "
-            "access when no specific role is required."
-        ),
-    )
-    args = parser.parse_args()
+def assign_enterprise_app(
+    graph: GraphClient,
+    service_principal_id: str,
+    principal_id: str,
+    app_role_id: str = DEFAULT_ACCESS_ROLE_ID,
+) -> dict[str, Any]:
+    service_principal_id = normalize_object_id(service_principal_id)
+    principal_id = normalize_object_id(principal_id)
+    app_role_id = normalize_object_id(app_role_id)
 
-    assignment = GraphClient().request(
+    return graph.request(
         "POST",
-        f"/servicePrincipals/{args.service_principal_id}/appRoleAssignedTo",
+        f"/servicePrincipals/{service_principal_id}/appRoleAssignedTo",
         json={
-            "principalId": args.principal_id,
-            "resourceId": args.service_principal_id,
-            "appRoleId": args.app_role_id,
+            "principalId": principal_id,
+            "resourceId": service_principal_id,
+            "appRoleId": app_role_id,
         },
     )
-    print(json.dumps(assignment, indent=2))
-
-    return assignment
-
-
-def main() -> None:
-    validate = assign_enterprise_app()
-
-
-if __name__ == "__main__":
-    main()

@@ -1,36 +1,26 @@
-import argparse
-import json
+from typing import Any, Literal
 
 from graph_client import GraphClient
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Create a Microsoft Entra ID app registration."
-    )
-    parser.add_argument("--display-name", required=True)
-    parser.add_argument(
-        "--sign-in-audience",
-        choices=(
-            "AzureADMyOrg",
-            "AzureADMultipleOrgs",
-            "AzureADandPersonalMicrosoftAccount",
-            "PersonalMicrosoftAccount",
-        ),
-        default="AzureADMyOrg",
-    )
-    args = parser.parse_args()
+SignInAudience = Literal[
+    "AzureADMyOrg",
+    "AzureADMultipleOrgs",
+    "AzureADandPersonalMicrosoftAccount",
+    "PersonalMicrosoftAccount",
+]
 
-    application = GraphClient().request(
+
+def create_app_registration(
+    graph: GraphClient,
+    display_name: str,
+    sign_in_audience: SignInAudience = "AzureADMyOrg",
+) -> dict[str, Any]:
+    return graph.request(
         "POST",
         "/applications",
         json={
-            "displayName": args.display_name,
-            "signInAudience": args.sign_in_audience,
+            "displayName": display_name,
+            "signInAudience": sign_in_audience,
         },
     )
-    print(json.dumps(application, indent=2))
-
-
-if __name__ == "__main__":
-    main()

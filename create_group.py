@@ -1,37 +1,28 @@
-import argparse
-import json
+from typing import Any, Literal
 
 from graph_client import GraphClient
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Create a Microsoft Entra ID group.")
-    parser.add_argument("--display-name", required=True)
-    parser.add_argument("--mail-nickname", required=True)
-    parser.add_argument("--description", default="")
-    parser.add_argument(
-        "--type",
-        choices=("security", "microsoft-365"),
-        default="security",
-        help="Group type (default: security).",
-    )
-    args = parser.parse_args()
+GroupType = Literal["security", "microsoft-365"]
 
-    is_microsoft_365 = args.type == "microsoft-365"
-    group = GraphClient().request(
+
+def create_group(
+    graph: GraphClient,
+    display_name: str,
+    mail_nickname: str,
+    description: str = "",
+    group_type: GroupType = "security",
+) -> dict[str, Any]:
+    is_microsoft_365 = group_type == "microsoft-365"
+    return graph.request(
         "POST",
         "/groups",
         json={
-            "displayName": args.display_name,
-            "description": args.description,
+            "displayName": display_name,
+            "description": description,
             "mailEnabled": is_microsoft_365,
-            "mailNickname": args.mail_nickname,
+            "mailNickname": mail_nickname,
             "securityEnabled": not is_microsoft_365,
             "groupTypes": ["Unified"] if is_microsoft_365 else [],
         },
     )
-    print(json.dumps(group, indent=2))
-
-
-if __name__ == "__main__":
-    main()

@@ -1,45 +1,36 @@
-import argparse
-import json
 import re
-from getpass import getpass
+from typing import Any
 
 from graph_client import GraphClient
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Create a Microsoft Entra ID user.")
-    parser.add_argument("--display-name", required=True)
-    parser.add_argument("--user-principal-name", required=True)
-    parser.add_argument("--mail-nickname")
-    args = parser.parse_args()
+def create_user(
+    graph: GraphClient,
+    display_name: str,
+    user_principal_name: str,
+    password: str,
+    mail_nickname: str | None = None,
+) -> dict[str, Any]:
+    if not password:
+        raise ValueError("Password must not be empty.")
 
-    password = getpass("Temporary password (input hidden): ")
-    confirmation = getpass("Confirm temporary password: ")
-    if not password or password != confirmation:
-        parser.error("Passwords must be non-empty and match.")
-
-    mail_nickname = args.mail_nickname or re.sub(
-        r"[^A-Za-z0-9._'-]", "", args.user_principal_name.split("@", 1)[0]
+    nickname = mail_nickname or re.sub(
+        r"[^A-Za-z0-9._'-]", "", user_principal_name.split("@", 1)[0]
     )
-    if not mail_nickname:
-        parser.error("Could not derive a mail nickname; provide --mail-nickname.")
+    if not nickname:
+        raise ValueError("Could not derive a mail nickname; provide one explicitly.")
 
-    user = GraphClient().request(
+    return graph.request(
         "POST",
         "/users",
         json={
             "accountEnabled": True,
-            "displayName": args.display_name,
-            "mailNickname": mail_nickname,
-            "userPrincipalName": args.user_principal_name,
+            "displayName": display_name,
+            "mailNickname": nickname,
+            "userPrincipalName": user_principal_name,
             "passwordProfile": {
                 "forceChangePasswordNextSignIn": True,
                 "password": password,
             },
         },
     )
-    print(json.dumps(user, indent=2))
-
-
-if __name__ == "__main__":
-    main()
