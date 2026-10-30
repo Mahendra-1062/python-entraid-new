@@ -4,7 +4,7 @@ from typing import Any
 from graph_client import GraphClient
 
 
-def create_user(
+def make_user(
     graph: GraphClient,
     display_name: str,
     user_principal_name: str,
