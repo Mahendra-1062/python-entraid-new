@@ -111,6 +111,8 @@ def main(argv: Sequence[str] | None = None) -> None:
             password,
             args.mail_nickname,
         )
+        if result:
+            print("User created successfully.")
     elif args.command == "create-group":
         result = create_group(
             graph,
