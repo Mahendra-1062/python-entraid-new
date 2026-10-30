@@ -5,7 +5,7 @@ from graph_client import GraphClient
 from create_group import create_group
 
 
-def create_user(
+def make_user(
     graph: GraphClient,
     display_name: str,
     user_principal_name: str,

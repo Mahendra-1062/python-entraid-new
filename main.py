@@ -8,7 +8,7 @@ from assign_enterprise_app import assign_enterprise_app
 from create_app_registration import create_app_registration
 from create_enterprise_app import create_enterprise_app
 from create_group import create_group
-from create_user import create_user
+from create_user import make_user
 from graph_client import GraphClient, normalize_object_id
 
 
@@ -104,7 +104,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     graph = GraphClient()
     if args.command == "create-user":
         assert password is not None
-        result = create_user(
+        result = make_user(
             graph,
             args.display_name,
             args.user_principal_name,
